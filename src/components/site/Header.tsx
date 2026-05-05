@@ -20,7 +20,7 @@ export function Header() {
         <Link to="/" className="flex items-center gap-2">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary font-display text-primary-foreground font-bold">S</span>
           <span className="font-display text-base font-bold tracking-tight">
-            SUNU<span className="text-primary"> TRAINING CENTER</span>
+            SUNU<span className="text-primary"> TRAINING</span>
           </span>
         </Link>
 
