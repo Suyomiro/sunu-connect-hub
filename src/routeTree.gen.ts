@@ -15,6 +15,7 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CandidatureRouteImport } from './routes/candidature'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as EspaceEntrepriseIndexRouteImport } from './routes/espace-entreprise.index'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -46,22 +47,28 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EspaceEntrepriseIndexRoute = EspaceEntrepriseIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EspaceEntrepriseRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/candidature': typeof CandidatureRoute
   '/contact': typeof ContactRoute
-  '/espace-entreprise': typeof EspaceEntrepriseRoute
+  '/espace-entreprise': typeof EspaceEntrepriseRouteWithChildren
   '/services': typeof ServicesRoute
+  '/espace-entreprise/': typeof EspaceEntrepriseIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/a-propos': typeof AProposRoute
   '/candidature': typeof CandidatureRoute
   '/contact': typeof ContactRoute
-  '/espace-entreprise': typeof EspaceEntrepriseRoute
   '/services': typeof ServicesRoute
+  '/espace-entreprise': typeof EspaceEntrepriseIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,8 +76,9 @@ export interface FileRoutesById {
   '/a-propos': typeof AProposRoute
   '/candidature': typeof CandidatureRoute
   '/contact': typeof ContactRoute
-  '/espace-entreprise': typeof EspaceEntrepriseRoute
+  '/espace-entreprise': typeof EspaceEntrepriseRouteWithChildren
   '/services': typeof ServicesRoute
+  '/espace-entreprise/': typeof EspaceEntrepriseIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,14 +89,15 @@ export interface FileRouteTypes {
     | '/contact'
     | '/espace-entreprise'
     | '/services'
+    | '/espace-entreprise/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/a-propos'
     | '/candidature'
     | '/contact'
-    | '/espace-entreprise'
     | '/services'
+    | '/espace-entreprise'
   id:
     | '__root__'
     | '/'
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/espace-entreprise'
     | '/services'
+    | '/espace-entreprise/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -104,7 +114,7 @@ export interface RootRouteChildren {
   AProposRoute: typeof AProposRoute
   CandidatureRoute: typeof CandidatureRoute
   ContactRoute: typeof ContactRoute
-  EspaceEntrepriseRoute: typeof EspaceEntrepriseRoute
+  EspaceEntrepriseRoute: typeof EspaceEntrepriseRouteWithChildren
   ServicesRoute: typeof ServicesRoute
 }
 
@@ -152,15 +162,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/espace-entreprise/': {
+      id: '/espace-entreprise/'
+      path: '/'
+      fullPath: '/espace-entreprise/'
+      preLoaderRoute: typeof EspaceEntrepriseIndexRouteImport
+      parentRoute: typeof EspaceEntrepriseRoute
+    }
   }
 }
+
+interface EspaceEntrepriseRouteChildren {
+  EspaceEntrepriseIndexRoute: typeof EspaceEntrepriseIndexRoute
+}
+
+const EspaceEntrepriseRouteChildren: EspaceEntrepriseRouteChildren = {
+  EspaceEntrepriseIndexRoute: EspaceEntrepriseIndexRoute,
+}
+
+const EspaceEntrepriseRouteWithChildren =
+  EspaceEntrepriseRoute._addFileChildren(EspaceEntrepriseRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AProposRoute: AProposRoute,
   CandidatureRoute: CandidatureRoute,
   ContactRoute: ContactRoute,
-  EspaceEntrepriseRoute: EspaceEntrepriseRoute,
+  EspaceEntrepriseRoute: EspaceEntrepriseRouteWithChildren,
   ServicesRoute: ServicesRoute,
 }
 export const routeTree = rootRouteImport
