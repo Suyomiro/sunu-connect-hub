@@ -16,6 +16,12 @@ import { Route as CandidatureRouteImport } from './routes/candidature'
 import { Route as AProposRouteImport } from './routes/a-propos'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as EspaceEntrepriseIndexRouteImport } from './routes/espace-entreprise.index'
+import { Route as EspaceEntrepriseProfilRouteImport } from './routes/espace-entreprise.profil'
+import { Route as EspaceEntrepriseDashboardRouteImport } from './routes/espace-entreprise.dashboard'
+import { Route as EspaceEntrepriseCandidatsRouteImport } from './routes/espace-entreprise.candidats'
+import { Route as EspaceEntrepriseDemandesIndexRouteImport } from './routes/espace-entreprise.demandes.index'
+import { Route as EspaceEntrepriseDemandesNouvelleRouteImport } from './routes/espace-entreprise.demandes.nouvelle'
+import { Route as EspaceEntrepriseDemandesIdRouteImport } from './routes/espace-entreprise.demandes.$id'
 
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
@@ -52,6 +58,41 @@ const EspaceEntrepriseIndexRoute = EspaceEntrepriseIndexRouteImport.update({
   path: '/',
   getParentRoute: () => EspaceEntrepriseRoute,
 } as any)
+const EspaceEntrepriseProfilRoute = EspaceEntrepriseProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => EspaceEntrepriseRoute,
+} as any)
+const EspaceEntrepriseDashboardRoute =
+  EspaceEntrepriseDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => EspaceEntrepriseRoute,
+  } as any)
+const EspaceEntrepriseCandidatsRoute =
+  EspaceEntrepriseCandidatsRouteImport.update({
+    id: '/candidats',
+    path: '/candidats',
+    getParentRoute: () => EspaceEntrepriseRoute,
+  } as any)
+const EspaceEntrepriseDemandesIndexRoute =
+  EspaceEntrepriseDemandesIndexRouteImport.update({
+    id: '/demandes/',
+    path: '/demandes/',
+    getParentRoute: () => EspaceEntrepriseRoute,
+  } as any)
+const EspaceEntrepriseDemandesNouvelleRoute =
+  EspaceEntrepriseDemandesNouvelleRouteImport.update({
+    id: '/demandes/nouvelle',
+    path: '/demandes/nouvelle',
+    getParentRoute: () => EspaceEntrepriseRoute,
+  } as any)
+const EspaceEntrepriseDemandesIdRoute =
+  EspaceEntrepriseDemandesIdRouteImport.update({
+    id: '/demandes/$id',
+    path: '/demandes/$id',
+    getParentRoute: () => EspaceEntrepriseRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,7 +101,13 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/espace-entreprise': typeof EspaceEntrepriseRouteWithChildren
   '/services': typeof ServicesRoute
+  '/espace-entreprise/candidats': typeof EspaceEntrepriseCandidatsRoute
+  '/espace-entreprise/dashboard': typeof EspaceEntrepriseDashboardRoute
+  '/espace-entreprise/profil': typeof EspaceEntrepriseProfilRoute
   '/espace-entreprise/': typeof EspaceEntrepriseIndexRoute
+  '/espace-entreprise/demandes/$id': typeof EspaceEntrepriseDemandesIdRoute
+  '/espace-entreprise/demandes/nouvelle': typeof EspaceEntrepriseDemandesNouvelleRoute
+  '/espace-entreprise/demandes/': typeof EspaceEntrepriseDemandesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -68,7 +115,13 @@ export interface FileRoutesByTo {
   '/candidature': typeof CandidatureRoute
   '/contact': typeof ContactRoute
   '/services': typeof ServicesRoute
+  '/espace-entreprise/candidats': typeof EspaceEntrepriseCandidatsRoute
+  '/espace-entreprise/dashboard': typeof EspaceEntrepriseDashboardRoute
+  '/espace-entreprise/profil': typeof EspaceEntrepriseProfilRoute
   '/espace-entreprise': typeof EspaceEntrepriseIndexRoute
+  '/espace-entreprise/demandes/$id': typeof EspaceEntrepriseDemandesIdRoute
+  '/espace-entreprise/demandes/nouvelle': typeof EspaceEntrepriseDemandesNouvelleRoute
+  '/espace-entreprise/demandes': typeof EspaceEntrepriseDemandesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -78,7 +131,13 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/espace-entreprise': typeof EspaceEntrepriseRouteWithChildren
   '/services': typeof ServicesRoute
+  '/espace-entreprise/candidats': typeof EspaceEntrepriseCandidatsRoute
+  '/espace-entreprise/dashboard': typeof EspaceEntrepriseDashboardRoute
+  '/espace-entreprise/profil': typeof EspaceEntrepriseProfilRoute
   '/espace-entreprise/': typeof EspaceEntrepriseIndexRoute
+  '/espace-entreprise/demandes/$id': typeof EspaceEntrepriseDemandesIdRoute
+  '/espace-entreprise/demandes/nouvelle': typeof EspaceEntrepriseDemandesNouvelleRoute
+  '/espace-entreprise/demandes/': typeof EspaceEntrepriseDemandesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -89,7 +148,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/espace-entreprise'
     | '/services'
+    | '/espace-entreprise/candidats'
+    | '/espace-entreprise/dashboard'
+    | '/espace-entreprise/profil'
     | '/espace-entreprise/'
+    | '/espace-entreprise/demandes/$id'
+    | '/espace-entreprise/demandes/nouvelle'
+    | '/espace-entreprise/demandes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -97,7 +162,13 @@ export interface FileRouteTypes {
     | '/candidature'
     | '/contact'
     | '/services'
+    | '/espace-entreprise/candidats'
+    | '/espace-entreprise/dashboard'
+    | '/espace-entreprise/profil'
     | '/espace-entreprise'
+    | '/espace-entreprise/demandes/$id'
+    | '/espace-entreprise/demandes/nouvelle'
+    | '/espace-entreprise/demandes'
   id:
     | '__root__'
     | '/'
@@ -106,7 +177,13 @@ export interface FileRouteTypes {
     | '/contact'
     | '/espace-entreprise'
     | '/services'
+    | '/espace-entreprise/candidats'
+    | '/espace-entreprise/dashboard'
+    | '/espace-entreprise/profil'
     | '/espace-entreprise/'
+    | '/espace-entreprise/demandes/$id'
+    | '/espace-entreprise/demandes/nouvelle'
+    | '/espace-entreprise/demandes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -169,15 +246,69 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EspaceEntrepriseIndexRouteImport
       parentRoute: typeof EspaceEntrepriseRoute
     }
+    '/espace-entreprise/profil': {
+      id: '/espace-entreprise/profil'
+      path: '/profil'
+      fullPath: '/espace-entreprise/profil'
+      preLoaderRoute: typeof EspaceEntrepriseProfilRouteImport
+      parentRoute: typeof EspaceEntrepriseRoute
+    }
+    '/espace-entreprise/dashboard': {
+      id: '/espace-entreprise/dashboard'
+      path: '/dashboard'
+      fullPath: '/espace-entreprise/dashboard'
+      preLoaderRoute: typeof EspaceEntrepriseDashboardRouteImport
+      parentRoute: typeof EspaceEntrepriseRoute
+    }
+    '/espace-entreprise/candidats': {
+      id: '/espace-entreprise/candidats'
+      path: '/candidats'
+      fullPath: '/espace-entreprise/candidats'
+      preLoaderRoute: typeof EspaceEntrepriseCandidatsRouteImport
+      parentRoute: typeof EspaceEntrepriseRoute
+    }
+    '/espace-entreprise/demandes/': {
+      id: '/espace-entreprise/demandes/'
+      path: '/demandes'
+      fullPath: '/espace-entreprise/demandes/'
+      preLoaderRoute: typeof EspaceEntrepriseDemandesIndexRouteImport
+      parentRoute: typeof EspaceEntrepriseRoute
+    }
+    '/espace-entreprise/demandes/nouvelle': {
+      id: '/espace-entreprise/demandes/nouvelle'
+      path: '/demandes/nouvelle'
+      fullPath: '/espace-entreprise/demandes/nouvelle'
+      preLoaderRoute: typeof EspaceEntrepriseDemandesNouvelleRouteImport
+      parentRoute: typeof EspaceEntrepriseRoute
+    }
+    '/espace-entreprise/demandes/$id': {
+      id: '/espace-entreprise/demandes/$id'
+      path: '/demandes/$id'
+      fullPath: '/espace-entreprise/demandes/$id'
+      preLoaderRoute: typeof EspaceEntrepriseDemandesIdRouteImport
+      parentRoute: typeof EspaceEntrepriseRoute
+    }
   }
 }
 
 interface EspaceEntrepriseRouteChildren {
+  EspaceEntrepriseCandidatsRoute: typeof EspaceEntrepriseCandidatsRoute
+  EspaceEntrepriseDashboardRoute: typeof EspaceEntrepriseDashboardRoute
+  EspaceEntrepriseProfilRoute: typeof EspaceEntrepriseProfilRoute
   EspaceEntrepriseIndexRoute: typeof EspaceEntrepriseIndexRoute
+  EspaceEntrepriseDemandesIdRoute: typeof EspaceEntrepriseDemandesIdRoute
+  EspaceEntrepriseDemandesNouvelleRoute: typeof EspaceEntrepriseDemandesNouvelleRoute
+  EspaceEntrepriseDemandesIndexRoute: typeof EspaceEntrepriseDemandesIndexRoute
 }
 
 const EspaceEntrepriseRouteChildren: EspaceEntrepriseRouteChildren = {
+  EspaceEntrepriseCandidatsRoute: EspaceEntrepriseCandidatsRoute,
+  EspaceEntrepriseDashboardRoute: EspaceEntrepriseDashboardRoute,
+  EspaceEntrepriseProfilRoute: EspaceEntrepriseProfilRoute,
   EspaceEntrepriseIndexRoute: EspaceEntrepriseIndexRoute,
+  EspaceEntrepriseDemandesIdRoute: EspaceEntrepriseDemandesIdRoute,
+  EspaceEntrepriseDemandesNouvelleRoute: EspaceEntrepriseDemandesNouvelleRoute,
+  EspaceEntrepriseDemandesIndexRoute: EspaceEntrepriseDemandesIndexRoute,
 }
 
 const EspaceEntrepriseRouteWithChildren =
