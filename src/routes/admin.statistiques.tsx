@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AdminShell } from "@/components/site/AdminShell";
 import { PageHeader, StatCard } from "@/components/site/AppShell";
 import { Activity, Briefcase, Languages, TrendingUp } from "lucide-react";
-import { MOCK_CANDIDATS, MOCK_DEMANDES } from "@/lib/mock-data";
+import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/statistiques")({
   head: () => ({ meta: [{ title: "Statistiques — Backoffice" }] }),
@@ -10,25 +10,23 @@ export const Route = createFileRoute("/admin/statistiques")({
 });
 
 function AdminStats() {
-  const parStatut = MOCK_DEMANDES.reduce<Record<string, number>>((acc, d) => {
-    acc[d.statut] = (acc[d.statut] ?? 0) + 1;
-    return acc;
-  }, {});
-  const parLangue = MOCK_CANDIDATS.flatMap((c) => c.langues).reduce<Record<string, number>>((acc, l) => {
-    acc[l] = (acc[l] ?? 0) + 1;
-    return acc;
-  }, {});
-  const max = Math.max(...Object.values(parLangue));
+  const candidats = useStore((s) => s.candidats);
+  const demandes = useStore((s) => s.demandes);
+  const parStatut = demandes.reduce<Record<string, number>>((acc, d) => { acc[d.statut] = (acc[d.statut] ?? 0) + 1; return acc; }, {});
+  const parLangue = candidats.flatMap((c) => c.langues).reduce<Record<string, number>>((acc, l) => { acc[l] = (acc[l] ?? 0) + 1; return acc; }, {});
+  const max = Math.max(1, ...Object.values(parLangue));
+  const pourvues = demandes.filter((d) => d.statut === "Pourvue").length;
+  const taux = demandes.length ? Math.round((pourvues / demandes.length) * 100) : 0;
 
   return (
     <AdminShell>
       <PageHeader title="Statistiques" description="Indicateurs clés de l'activité de recrutement." />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Taux de placement" value="68%" icon={TrendingUp} hint="Sur les 90 derniers jours" />
-        <StatCard label="Postes pourvus" value={MOCK_DEMANDES.filter((d) => d.statut === "Pourvue").length} icon={Briefcase} hint="Cette année" />
-        <StatCard label="Activité semaine" value="42" icon={Activity} hint="Actions backoffice" />
-        <StatCard label="Langues couvertes" value={Object.keys(parLangue).length} icon={Languages} hint="Dans le vivier" />
+        <StatCard label="Taux de placement" value={`${taux}%`} icon={TrendingUp} hint="Sur l'ensemble des demandes" />
+        <StatCard label="Postes pourvus" value={pourvues} icon={Briefcase} hint="Cette année" />
+        <StatCard label="Candidats" value={candidats.length} icon={Activity} hint="Dans le vivier" />
+        <StatCard label="Langues couvertes" value={Object.keys(parLangue).length} icon={Languages} hint="Du vivier" />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -36,19 +34,15 @@ function AdminStats() {
           <h3 className="font-display text-lg font-bold">Demandes par statut</h3>
           <div className="mt-5 space-y-3">
             {Object.entries(parStatut).map(([k, v]) => {
-              const pct = (v / MOCK_DEMANDES.length) * 100;
+              const pct = (v / Math.max(1, demandes.length)) * 100;
               return (
                 <div key={k}>
-                  <div className="mb-1 flex justify-between text-sm">
-                    <span className="font-medium">{k}</span>
-                    <span className="text-ink-soft">{v}</span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-secondary">
-                    <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
-                  </div>
+                  <div className="mb-1 flex justify-between text-sm"><span className="font-medium">{k}</span><span className="text-ink-soft">{v}</span></div>
+                  <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-primary" style={{ width: `${pct}%` }} /></div>
                 </div>
               );
             })}
+            {Object.keys(parStatut).length === 0 && <p className="text-sm text-ink-soft">Aucune donnée.</p>}
           </div>
         </div>
 
@@ -57,13 +51,8 @@ function AdminStats() {
           <div className="mt-5 space-y-3">
             {Object.entries(parLangue).sort((a, b) => b[1] - a[1]).map(([k, v]) => (
               <div key={k}>
-                <div className="mb-1 flex justify-between text-sm">
-                  <span className="font-medium">{k}</span>
-                  <span className="text-ink-soft">{v}</span>
-                </div>
-                <div className="h-2 overflow-hidden rounded-full bg-secondary">
-                  <div className="h-full bg-primary" style={{ width: `${(v / max) * 100}%` }} />
-                </div>
+                <div className="mb-1 flex justify-between text-sm"><span className="font-medium">{k}</span><span className="text-ink-soft">{v}</span></div>
+                <div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full bg-primary" style={{ width: `${(v / max) * 100}%` }} /></div>
               </div>
             ))}
           </div>

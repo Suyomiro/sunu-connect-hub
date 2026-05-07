@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Users, FileText, Building2, Clock, TrendingUp, ArrowRight } from "lucide-react";
 import { AdminShell } from "@/components/site/AdminShell";
 import { PageHeader, StatCard, StatusBadge } from "@/components/site/AppShell";
-import { MOCK_CANDIDATS, MOCK_DEMANDES, MOCK_PARTENAIRES } from "@/lib/mock-data";
+import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard admin — SUNU TRAINING CENTER" }] }),
@@ -10,13 +10,13 @@ export const Route = createFileRoute("/admin/dashboard")({
 });
 
 function AdminDashboard() {
+  const candidats = useStore((s) => s.candidats);
+  const demandes = useStore((s) => s.demandes);
+  const partenaires = useStore((s) => s.partenaires);
   const tone = (s: string) =>
     s === "Pourvue" ? "success" : s === "Nouvelle" ? "info" : s === "Clôturée" ? "default" : "warning";
-  const delaiMoyen =
-    Math.round(
-      MOCK_DEMANDES.filter((d) => d.delaiJours).reduce((a, d) => a + (d.delaiJours ?? 0), 0) /
-        MOCK_DEMANDES.filter((d) => d.delaiJours).length,
-    );
+  const withDelai = demandes.filter((d) => d.delaiJours);
+  const delaiMoyen = withDelai.length ? Math.round(withDelai.reduce((a, d) => a + (d.delaiJours ?? 0), 0) / withDelai.length) : 0;
 
   return (
     <AdminShell>
