@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Users, FileText, Building2, Clock, TrendingUp, ArrowRight } from "lucide-react";
 import { AdminShell } from "@/components/site/AdminShell";
 import { PageHeader, StatCard, StatusBadge } from "@/components/site/AppShell";
-import { MOCK_CANDIDATS, MOCK_DEMANDES, MOCK_PARTENAIRES } from "@/lib/mock-data";
+import { useStore } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard admin — SUNU TRAINING CENTER" }] }),
@@ -10,22 +10,22 @@ export const Route = createFileRoute("/admin/dashboard")({
 });
 
 function AdminDashboard() {
+  const candidats = useStore((s) => s.candidats);
+  const demandes = useStore((s) => s.demandes);
+  const partenaires = useStore((s) => s.partenaires);
   const tone = (s: string) =>
     s === "Pourvue" ? "success" : s === "Nouvelle" ? "info" : s === "Clôturée" ? "default" : "warning";
-  const delaiMoyen =
-    Math.round(
-      MOCK_DEMANDES.filter((d) => d.delaiJours).reduce((a, d) => a + (d.delaiJours ?? 0), 0) /
-        MOCK_DEMANDES.filter((d) => d.delaiJours).length,
-    );
+  const withDelai = demandes.filter((d) => d.delaiJours);
+  const delaiMoyen = withDelai.length ? Math.round(withDelai.reduce((a, d) => a + (d.delaiJours ?? 0), 0) / withDelai.length) : 0;
 
   return (
     <AdminShell>
       <PageHeader title="Tableau de bord" description="Pilotage global de l'activité de recrutement." />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Candidatures" value={MOCK_CANDIDATS.length} icon={Users} hint="Total dans le vivier" />
-        <StatCard label="Demandes actives" value={MOCK_DEMANDES.filter((d) => d.statut !== "Clôturée" && d.statut !== "Pourvue").length} icon={FileText} hint={`${MOCK_DEMANDES.length} au total`} />
-        <StatCard label="Partenaires" value={MOCK_PARTENAIRES.length} icon={Building2} hint={`${MOCK_PARTENAIRES.filter((p) => p.statut === "Actif").length} actifs`} />
+        <StatCard label="Candidatures" value={candidats.length} icon={Users} hint="Total dans le vivier" />
+        <StatCard label="Demandes actives" value={demandes.filter((d) => d.statut !== "Clôturée" && d.statut !== "Pourvue").length} icon={FileText} hint={`${demandes.length} au total`} />
+        <StatCard label="Partenaires" value={partenaires.length} icon={Building2} hint={`${partenaires.filter((p) => p.statut === "Actif").length} actifs`} />
         <StatCard label="Délai moyen" value={`${delaiMoyen}j`} icon={Clock} hint="Du dépôt à la shortlist" />
       </div>
 
@@ -47,7 +47,7 @@ function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {MOCK_DEMANDES.slice(0, 5).map((d) => (
+              {demandes.slice(0, 5).map((d) => (
                 <tr key={d.id} className="border-b border-border/60">
                   <td className="py-3 font-mono text-xs text-ink-soft">{d.reference}</td>
                   <td className="py-3 font-medium">{d.partenaire}</td>
@@ -65,7 +65,7 @@ function AdminDashboard() {
             <Link to="/admin/candidats" className="text-sm font-medium text-primary hover:underline">Voir →</Link>
           </div>
           <div className="mt-4 space-y-3">
-            {MOCK_CANDIDATS.slice(0, 5).map((c) => (
+            {candidats.slice(0, 5).map((c) => (
               <div key={c.id} className="flex items-center justify-between border-b border-border/60 pb-2 last:border-0">
                 <div>
                   <p className="text-sm font-semibold">{c.prenom} {c.nom}</p>

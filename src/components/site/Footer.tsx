@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { Logo } from "@/components/site/Logo";
 
 export function Footer() {
   return (
@@ -7,10 +8,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2">
-              <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary font-display text-primary-foreground font-bold">S</span>
-              <span className="font-display text-base font-bold tracking-tight">SUNU TRAINING CENTER</span>
-            </div>
+            <Logo className="h-12 w-auto" />
             <p className="mt-4 max-w-md text-sm text-ink-soft">
               Cabinet de recrutement et d'intérim spécialisé en Gestion de la Relation Client (GRC) au cœur de Dakar, Sénégal.
             </p>

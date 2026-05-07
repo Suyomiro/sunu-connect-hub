@@ -5,27 +5,34 @@ import { PageHeader, StatusBadge } from "@/components/site/AppShell";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
-import { MOCK_DEMANDES } from "@/lib/mock-data";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Search, Eye, Trash2 } from "lucide-react";
+import { useStore, demandesApi } from "@/lib/store";
+import type { Demande, Statut } from "@/lib/mock-data";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/demandes")({
   head: () => ({ meta: [{ title: "Demandes — Backoffice" }] }),
   component: AdminDemandes,
 });
 
+const STATUTS: Statut[] = ["Nouvelle", "En traitement", "Shortlist envoyée", "Pourvue", "Clôturée"];
+
 function AdminDemandes() {
+  const demandes = useStore((s) => s.demandes);
   const [q, setQ] = useState("");
   const [statut, setStatut] = useState("all");
-  const list = MOCK_DEMANDES.filter((d) =>
+  const [view, setView] = useState<Demande | null>(null);
+
+  const list = demandes.filter((d) =>
     (statut === "all" || d.statut === statut) &&
     (q === "" || d.poste.toLowerCase().includes(q.toLowerCase()) || d.partenaire.toLowerCase().includes(q.toLowerCase()) || d.reference.toLowerCase().includes(q.toLowerCase())),
   );
-  const tone = (s: string) =>
-    s === "Pourvue" ? "success" : s === "Nouvelle" ? "info" : s === "Clôturée" ? "default" : "warning";
+  const tone = (s: string) => s === "Pourvue" ? "success" : s === "Nouvelle" ? "info" : s === "Clôturée" ? "default" : "warning";
 
   return (
     <AdminShell>
-      <PageHeader title="Demandes de recrutement" description={`${MOCK_DEMANDES.length} demandes au total.`} />
+      <PageHeader title="Demandes de recrutement" description={`${demandes.length} demandes au total.`} />
 
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         <div className="relative sm:col-span-2">
@@ -36,11 +43,7 @@ function AdminDemandes() {
           <SelectTrigger><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Tous statuts</SelectItem>
-            <SelectItem value="Nouvelle">Nouvelle</SelectItem>
-            <SelectItem value="En traitement">En traitement</SelectItem>
-            <SelectItem value="Shortlist envoyée">Shortlist envoyée</SelectItem>
-            <SelectItem value="Pourvue">Pourvue</SelectItem>
-            <SelectItem value="Clôturée">Clôturée</SelectItem>
+            {STATUTS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
       </div>
@@ -49,13 +52,8 @@ function AdminDemandes() {
         <table className="w-full text-sm">
           <thead className="bg-secondary/60 text-left text-xs uppercase tracking-wider text-ink-soft">
             <tr>
-              <th className="px-4 py-3">Référence</th>
-              <th className="px-4 py-3">Partenaire</th>
-              <th className="px-4 py-3">Poste</th>
-              <th className="px-4 py-3">Postes</th>
-              <th className="px-4 py-3">Urgence</th>
-              <th className="px-4 py-3">Statut</th>
-              <th className="px-4 py-3"></th>
+              <th className="px-4 py-3">Référence</th><th className="px-4 py-3">Partenaire</th><th className="px-4 py-3">Poste</th>
+              <th className="px-4 py-3">Postes</th><th className="px-4 py-3">Urgence</th><th className="px-4 py-3">Statut</th><th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
@@ -66,13 +64,42 @@ function AdminDemandes() {
                 <td className="px-4 py-3">{d.poste}</td>
                 <td className="px-4 py-3">{d.nbPostes}</td>
                 <td className="px-4 py-3"><StatusBadge tone={d.urgence === "Haute" ? "danger" : d.urgence === "Moyenne" ? "warning" : "default"}>{d.urgence}</StatusBadge></td>
-                <td className="px-4 py-3"><StatusBadge tone={tone(d.statut)}>{d.statut}</StatusBadge></td>
-                <td className="px-4 py-3 text-right"><Button size="sm" variant="ghost">Traiter</Button></td>
+                <td className="px-4 py-3">
+                  <Select value={d.statut} onValueChange={(v) => { demandesApi.update(d.id, { statut: v as Statut }); toast.success("Statut mis à jour"); }}>
+                    <SelectTrigger className="h-8 w-40"><SelectValue /></SelectTrigger>
+                    <SelectContent>{STATUTS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                  </Select>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <div className="flex justify-end gap-1">
+                    <Button size="icon" variant="ghost" onClick={() => setView(d)}><Eye className="h-4 w-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => { if (confirm("Supprimer cette demande ?")) { demandesApi.remove(d.id); toast.success("Supprimée"); } }}><Trash2 className="h-4 w-4 text-rose-500" /></Button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      <Dialog open={!!view} onOpenChange={(o) => !o && setView(null)}>
+        <DialogContent>
+          {view && (<>
+            <DialogHeader><DialogTitle>{view.poste}</DialogTitle></DialogHeader>
+            <div className="grid gap-2 text-sm">
+              <p><b>Référence :</b> {view.reference}</p>
+              <p><b>Partenaire :</b> {view.partenaire}</p>
+              <p><b>Postes :</b> {view.nbPostes}</p>
+              <p><b>Expérience :</b> {view.experience}</p>
+              <p><b>Niveau :</b> {view.niveau}</p>
+              <p><b>Langues :</b> {view.langues.join(", ")}</p>
+              <p><b>Urgence :</b> {view.urgence}</p>
+              <p><b>Statut :</b> <StatusBadge tone={tone(view.statut)}>{view.statut}</StatusBadge></p>
+              <p><b>Créée le :</b> {new Date(view.dateCreation).toLocaleDateString("fr-FR")}</p>
+            </div>
+          </>)}
+        </DialogContent>
+      </Dialog>
     </AdminShell>
   );
 }
