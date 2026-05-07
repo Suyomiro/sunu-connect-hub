@@ -15,13 +15,11 @@ const NAV: NavItem[] = [
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const [session, setSession] = useState<{ email: string; name: string; role: "Admin" | "Recruteur" } | null>(null);
+  const [session] = useState(() => getAdminSession());
 
   useEffect(() => {
-    const s = getAdminSession();
-    if (!s) navigate({ to: "/admin" });
-    else setSession(s);
-  }, [navigate]);
+    if (!session) navigate({ to: "/admin" });
+  }, [navigate, session]);
 
   if (!session) return null;
 

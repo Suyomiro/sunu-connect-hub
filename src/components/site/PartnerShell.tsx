@@ -5,7 +5,12 @@ import { AppShell, type NavItem } from "@/components/site/AppShell";
 import { clearPartnerSession, getPartnerSession } from "@/lib/mock-data";
 
 const NAV: NavItem[] = [
-  { to: "/espace-entreprise/dashboard", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
+  {
+    to: "/espace-entreprise/dashboard",
+    label: "Tableau de bord",
+    icon: LayoutDashboard,
+    exact: true,
+  },
   { to: "/espace-entreprise/demandes", label: "Mes demandes", icon: FileText },
   { to: "/espace-entreprise/demandes/nouvelle", label: "Nouvelle demande", icon: Plus },
   { to: "/espace-entreprise/candidats", label: "Candidats proposés", icon: Users },
@@ -14,13 +19,11 @@ const NAV: NavItem[] = [
 
 export function PartnerShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const [session, setSession] = useState<{ email: string; company: string } | null>(null);
+  const [session] = useState(() => getPartnerSession());
 
   useEffect(() => {
-    const s = getPartnerSession();
-    if (!s) navigate({ to: "/espace-entreprise" });
-    else setSession(s);
-  }, [navigate]);
+    if (!session) navigate({ to: "/espace-entreprise" });
+  }, [navigate, session]);
 
   if (!session) return null;
 
