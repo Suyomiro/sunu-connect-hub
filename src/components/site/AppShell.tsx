@@ -3,6 +3,7 @@ import { useState } from "react";
 import { LogOut, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/site/Logo";
 
 export interface NavItem {
   to: string;
@@ -40,7 +41,7 @@ export function AppShell({ brand, brandSub, nav, user, onLogout, children }: App
       >
         <div className="flex h-16 items-center justify-between border-b border-border px-5">
           <Link to="/" className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-primary font-display text-sm font-bold text-primary-foreground">S</span>
+            <Logo className="h-8 w-auto" />
             <div className="leading-tight">
               <p className="font-display text-sm font-bold">{brand}</p>
               {brandSub && <p className="text-[10px] uppercase tracking-widest text-ink-soft">{brandSub}</p>}
